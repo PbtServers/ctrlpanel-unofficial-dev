@@ -245,13 +245,40 @@ class ServerController extends Controller
 
     private function getServersWithInfo(): \Illuminate\Database\Eloquent\Collection
     {
-        $servers = Auth::user()->servers;
+    $user = Auth::user();
 
+    if (!$user) {
+        return new \Illuminate\Database\Eloquent\Collection();
+    }
+
+    $servers = $user->servers;
+        
         foreach ($servers as $server) {
-            $serverInfo = $this->pterodactyl->getServerAttributes($server->pterodactyl_id);
-            if (!$serverInfo) continue;
+            // El servidor puede existir localmente antes de estar
+            // provisionado correctamente en Pterodactyl.
+            if (!$server->pterodactyl_id) {
+                continue;
+            }
 
-            $this->updateServerInfo($server, $serverInfo);
+            try {
+                $serverInfo = $this->pterodactyl->getServerAttributes(
+                    (int) $server->pterodactyl_id
+                );
+
+                if (!$serverInfo) {
+                    continue;
+                }
+
+                $this->updateServerInfo($server, $serverInfo);
+            } catch (\Throwable $e) {
+                \Log::error('Failed to retrieve Pterodactyl server information', [
+                    'server_id' => $server->id,
+                    'pterodactyl_id' => $server->pterodactyl_id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                continue;
+            }
         }
 
         return $servers;
@@ -311,12 +338,20 @@ class ServerController extends Controller
 
     public function destroy(Server $server): RedirectResponse
     {
+        Log::error("DESTROY CONTROLLER ENTERED", ["server" => $server->id]);
+
         if ($server->user_id !== Auth::id()) {
             return back()->with('error', __('This is not your Server!'));
         }
 
         try {
-            $serverInfo = $this->pterodactyl->getServerAttributes($server->pterodactyl_id);
+            if (!$server->pterodactyl_id) {
+                throw new Exception("Server has no Pterodactyl ID");
+            }
+
+            $serverInfo = $this->pterodactyl->getServerAttributes(
+                (int) $server->pterodactyl_id
+            );
 
             if (!$serverInfo) {
                 throw new Exception("Server not found on Pterodactyl panel");
