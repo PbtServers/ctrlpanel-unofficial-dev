@@ -2,6 +2,125 @@
     <img src="https://ctrlpanel.gg/img/controlpanel.png" width="128" alt="" />
 </div>
 
+# Archivos modificados — PbtHosting CtrlPanel
+
+## Resumen
+
+Estos son los archivos que hemos preparado/modificado para trasladar los cambios del entorno local al repositorio de GitHub.
+
+### 1. `app/Http/Controllers/ServerController.php`
+
+Cambios relacionados con:
+
+* Corrección del error 500 al consultar información de Pterodactyl.
+* Manejo de servidores que todavía no tienen `pterodactyl_id`.
+* Creación de servidores mediante `ServerCreationService`.
+* Protección contra múltiples solicitudes de creación simultáneas.
+* Validación de producto, créditos, recursos y allocations.
+* Manejo de errores durante la creación.
+* Eliminación de servidores.
+* Manejo de errores de Pterodactyl.
+* Mejoras en la obtención de información de los servidores.
+
+### 2. `app/Services/ServerCreationService.php`
+
+Cambios relacionados con:
+
+* Creación del registro local del servidor.
+* Generación/asignación del ID local.
+* Reserva de créditos antes del aprovisionamiento.
+* Obtención de Node y allocation disponibles.
+* Creación del servidor en Pterodactyl.
+* Guardado de `pterodactyl_id` e `identifier`.
+* Estados de provisioning.
+* Manejo de creación correcta.
+* Manejo de creación fallida.
+* Reembolso de créditos cuando corresponde.
+* Reconciliación de estados inciertos.
+* Protección contra solicitudes simultáneas mediante locks.
+
+### 3. `app/Classes/PterodactylClient.php`
+
+Cambios relacionados con:
+
+* Comunicación con la API de Pterodactyl.
+* Creación de servidores.
+* Obtención de allocations.
+* Obtención de información de servidores.
+* Comprobación de recursos de Nodes.
+* Manejo de respuestas y errores de Pterodactyl.
+
+### 4. `app/Models/Server.php`
+
+Cambios relacionados con:
+
+* Generación automática del ID local mediante Nanoid.
+* Estados del servidor:
+
+  * `provisioning`
+  * `active`
+  * `failed`
+  * `pending_reconciliation`
+* Gestión de eliminación del servidor en Pterodactyl.
+* Gestión del `pterodactyl_id`.
+* Relaciones del servidor.
+
+> Importante: este modelo **no contiene `node_id`** y no debemos añadirlo sin comprobar primero cómo funciona el modelo de Nodes del proyecto.
+
+### 5. `app/Jobs/PostServerCreationJob.php`
+
+Responsable de:
+
+* Procesar las tareas posteriores a una creación correcta.
+* Mantener el proceso de creación idempotente.
+* Completar la configuración del servidor después de crearlo en Pterodactyl.
+
+### 6. `app/Jobs/ReconcileServerCreationJob.php`
+
+Responsable de:
+
+* Comprobar servidores cuya creación quedó en un estado incierto.
+* Determinar si Pterodactyl creó realmente el servidor.
+* Recuperar `pterodactyl_id` e `identifier` cuando sea posible.
+* Evitar servidores locales inconsistentes.
+* Gestionar correctamente créditos y estados pendientes.
+
+## Estructura final
+
+```text
+app/
+├── Classes/
+│   └── PterodactylClient.php
+├── Http/
+│   └── Controllers/
+│       └── ServerController.php
+├── Jobs/
+│   ├── PostServerCreationJob.php
+│   └── ReconcileServerCreationJob.php
+├── Models/
+│   └── Server.php
+└── Services/
+    └── ServerCreationService.php
+```
+
+## Total
+
+**6 archivos preparados para trasladar al repositorio de GitHub.**
+
+Repositorio destino:
+
+`PbtServers/ctrlpanel-unofficial-dev`
+
+### Pendiente
+
+Antes de subir migrations o modificaciones adicionales, comprobar:
+
+* Si se modificó la estructura de la tabla `servers`.
+* Si es necesario añadir/modificar `status`.
+* Si existe alguna migration relacionada con los nuevos estados.
+* Cómo se obtiene el Node en la versión actual del proyecto.
+* Compatibilidad con Jexactyl/Pterodactyl V4.0.6.
+
 # CtrlPanel.gg
 
 CtrlPanel offers an easy-to-use and free billing solution for all starting and experienced hosting providers that seamlessly integrates with the Pterodactyl panel. It facilitates account creation, server ordering, and management, while offering addons, multiple payment methods, and customizable themes for a comprehensive solution.
