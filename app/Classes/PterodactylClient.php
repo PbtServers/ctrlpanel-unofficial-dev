@@ -49,7 +49,7 @@ class PterodactylClient
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->user_token,
             'Content-type' => 'application/json',
-            'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Accept' => 'Application/json',
         ])->baseUrl($ptero_settings->getUrl() . 'api' . '/');
     }
 
@@ -58,7 +58,7 @@ class PterodactylClient
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->admin_token,
             'Content-type' => 'application/json',
-            'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Accept' => 'Application/json',
         ])->baseUrl($ptero_settings->getUrl() . 'api' . '/');
     }
 
