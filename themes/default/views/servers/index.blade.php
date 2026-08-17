@@ -47,7 +47,7 @@
 
             <div class="flex-row row d-flex justify-content-center justify-content-md-start">
                 @foreach ($servers as $server)
-                 @if($server->location && $server->node && $server->nest && $server->egg)
+                 @if($server->node && $server->nest && $server->egg)
                     <div class="pl-0 pr-0 col-xl-3 col-lg-5 col-md-6 col-sm-6 col-xs-12 card ml-sm-2 mr-sm-3"
                         style="max-width: 350px">
                         <div class="card-header">
