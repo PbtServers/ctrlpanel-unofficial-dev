@@ -67,6 +67,7 @@ class Server extends Model
         "product_id",
         "pterodactyl_id",
         "user_id",
+        "node_id",
         "last_billed",
         "canceled",
         "status"
