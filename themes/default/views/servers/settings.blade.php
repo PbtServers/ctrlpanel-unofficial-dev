@@ -201,7 +201,7 @@
                                         </div>
                                         <div class="col-sm-8 col-md-7">
                                             <span style="max-width: 250px;" class="d-inline-block text-truncate">
-                                                {{ $serverAttributes['relationships']['location']['attributes']['short'] }}
+                                                PbtHosting
                                             </span>
                                         </div>
                                     </div>
