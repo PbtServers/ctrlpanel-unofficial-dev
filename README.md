@@ -63,6 +63,8 @@ Cambios relacionados con:
 * Gestión de eliminación del servidor en Pterodactyl (Fork).
 * Gestión del `pterodactyl_id`.
 * Relaciones del servidor.
+* Corrección de `suspend()` y `unSuspend()`.
+* Corrección de la inicialización del cliente Pterodactyl.
 
 > **Importante:** este modelo no contiene `node_id` y no debemos añadirlo sin comprobar primero cómo funciona el modelo de Nodes del proyecto.
 
