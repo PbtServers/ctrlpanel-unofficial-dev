@@ -270,32 +270,34 @@ class PterodactylClient
     public function createServer(Server $server, Egg $egg, int $allocationId, mixed $eggVariables = null)
     {
        try {
-            $response = $this->application->post('application/servers', [
-                'name' => $server->name,
-                'external_id' => $server->id,
-                'user' => $server->user->pterodactyl_id,
-                'egg_id' => $egg->id,
-                'nest_id' => $egg->nest_id,
-                'docker_image' => $egg->docker_image,
-                'startup' => $egg->startup,
-                'environment' => $this->getEnvironmentVariables($egg, $eggVariables),
-                'oom_disabled' => !$server->product->oom_killer,
-                'limits' => [
-                    'memory' => $server->product->memory,
-                    'swap' => $server->product->swap,
-                    'disk' => $server->product->disk,
-                    'io' => $server->product->io,
-                    'cpu' => $server->product->cpu,
-                ],
-                'feature_limits' => [
-                    'databases' => $server->product->databases,
-                    'backups' => $server->product->backups,
-                    'allocations' => $server->product->allocations,
-                ],
-                'allocation' => [
-                    'default' => $allocationId,
-                ],
-            ]);
+        $response = $this->application->post('application/servers', [
+            'name' => $server->name,
+            'external_id' => $server->id,
+            'owner_id' => $server->user->pterodactyl_id,
+            'node_id' => $server->node_id,
+            'egg_id' => $egg->id,
+            'image' => $egg->docker_image,
+            'startup' => $egg->startup,
+            'environment' => $this->getEnvironmentVariables($egg, $eggVariables),
+            'limits' => [
+                'memory' => $server->product->memory,
+                'swap' => $server->product->swap,
+                'disk' => $server->product->disk,
+                'io' => $server->product->io,
+                'cpu' => $server->product->cpu,
+                'threads' => null,
+                'oom_killer' => !$server->product->oom_killer,
+            ],
+            'feature_limits' => [
+                'databases' => $server->product->databases,
+                'backups' => $server->product->backups,
+                'allocations' => $server->product->allocations,
+                'subusers' => 0,
+            ],
+            'allocation' => [
+                'default' => $allocationId,
+            ],
+        ]);
 
             return $response;
         } catch (Exception $e) {
