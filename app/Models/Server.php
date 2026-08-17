@@ -103,11 +103,13 @@ class Server extends Model
         });
 
         static::deleting(function (Server $server) {
-            $response = $server->getPterodactylClient()->application->post("application/servers/{$server->pterodactyl_id}/delete");
-            if ($response->failed() && !is_null($server->pterodactyl_id)) {
-                //only return error when it's not a 404 error
-                if ($response['errors'][0]['status'] != '404') {
-                    throw new Exception($response['errors'][0]['code']);
+            if (!is_null($server->pterodactyl_id)) {
+                $response = $server->getPterodactylClient()
+                    ->application
+                    ->post("application/servers/{$server->pterodactyl_id}/delete");
+
+                if ($response->failed() && $response->status() !== 404) {
+                    throw new Exception($response['errors'][0]['code'] ?? 'Pterodactyl deletion failed');
                 }
             }
         });
@@ -126,7 +128,9 @@ class Server extends Model
      */
     public function getPterodactylServer()
     {
-        return $this->pterodactyl->application->get("/application/servers/{$this->pterodactyl_id}");
+        return $this->getPterodactylClient()
+            ->application
+            ->get("/application/servers/{$this->pterodactyl_id}");
     }
 
     /**
@@ -134,7 +138,7 @@ class Server extends Model
      */
     public function suspend()
     {
-        $response = $this->pterodactyl->suspendServer($this);
+        $response = $this->getPterodactylClient()->suspendServer($this);
 
         if ($response->successful()) {
             $this->update([
@@ -150,7 +154,7 @@ class Server extends Model
      */
     public function unSuspend()
     {
-        $response = $this->pterodactyl->unSuspendServer($this);
+        $response = $this->getPterodactylClient()->unSuspendServer($this);
 
         if ($response->successful()) {
             $this->update([
@@ -200,5 +204,3 @@ class Server extends Model
             ->orderBy('created_at', 'asc');
     }
 }
-
-
