@@ -114,6 +114,16 @@ Cambio relacionado con la visualización de servidores en el tema Default:
 * Esto evita que un servidor desaparezca de `/servers` cuando Pterodactyl (Fork) no devuelve correctamente la ubicación.
 * La ubicación mostrada al usuario será siempre `PbtHosting`.
 
+### 10. `themes/default/views/servers/settings.blade.php`
+
+Cambios relacionados con:
+
+* Adaptación del tema Default a los cambios de Phoenix.
+* Ubicación fijada al valor `PbtHosting`.
+* Eliminación de la dependencia de `location` de Pterodactyl.
+* Corrección de errores `Undefined array key "location"`.
+* Compatibilidad con servidores sin información de `location`.
+
 ## Solución de ubicación
 
 La ubicación mostrada en `/servers` es un valor fijo: "PbtHosting"
@@ -143,11 +153,13 @@ themes/
 ├── phoenix/
 │   └── views/
 │       └── servers/
-│           └── index.blade.php
+│           ├── index.blade.php
+│           └── settings.blade.php
 └── default/
     └── views/
         └── servers/
-            └── index.blade.php
+            ├── index.blade.php
+            └── settings.blade.php
 ```
 
 ## Pendiente
