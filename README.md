@@ -126,7 +126,7 @@ Antes de realizar modificaciones adicionales, comprobar:
 * Compatibilidad con **Jexpanel/Jexactyl**.
 * Compatibilidad con **Pterodactyl (Fork)**.
 * Revisar por qué los servidores no aparecen actualmente en `/servers`.
-* Comprobar la relación entre los servidores almacenados en CtrlPanel y los servidores existentes en Pterodactyl (Fork).
+* Comprobar la relación entre los servidores almacenados en CtrlPanel y los servidores en Pterodactyl (Fork).
 
 # CtrlPanel.gg
 
