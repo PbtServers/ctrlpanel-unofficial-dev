@@ -271,14 +271,11 @@ class PterodactylClient
     {
        try {
         $response = $this->application->post('application/servers', [
-            'name' => $server->name,
             'external_id' => $server->id,
+            'name' => $server->name,
             'owner_id' => $server->user->pterodactyl_id,
             'node_id' => $server->node_id,
-            'egg_id' => $egg->id,
-            'image' => $egg->docker_image,
-            'startup' => $egg->startup,
-            'environment' => $this->getEnvironmentVariables($egg, $eggVariables),
+
             'limits' => [
                 'memory' => $server->product->memory,
                 'swap' => $server->product->swap,
@@ -288,15 +285,23 @@ class PterodactylClient
                 'threads' => null,
                 'oom_killer' => !$server->product->oom_killer,
             ],
+
             'feature_limits' => [
                 'databases' => $server->product->databases,
                 'backups' => $server->product->backups,
                 'allocations' => $server->product->allocations,
                 'subusers' => 0,
             ],
+
             'allocation' => [
                 'default' => $allocationId,
             ],
+
+            'egg_id' => $egg->id,
+            'startup' => $egg->startup,
+            'environment' => $this->getEnvironmentVariables($egg, $eggVariables),
+            'image' => $egg->docker_image,
+            'skip_scripts' => false,
         ]);
 
             return $response;
