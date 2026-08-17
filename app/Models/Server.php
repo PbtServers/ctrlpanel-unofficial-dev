@@ -24,7 +24,7 @@ class Server extends Model
     use HasFactory;
     use LogsActivity;
 
-    private PterodactylClient $pterodactyl;
+    private ?PterodactylClient $pterodactyl = null;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -83,12 +83,13 @@ class Server extends Model
         'billing_priority' => BillingPriority::class
     ];
 
-    public function __construct()
+    private function getPterodactylClient(): PterodactylClient
     {
-        parent::__construct();
+        if ($this->pterodactyl === null) {
+            $this->pterodactyl = new PterodactylClient(new PterodactylSettings());
+        }
 
-        $ptero_settings = new PterodactylSettings();
-        $this->pterodactyl = new PterodactylClient($ptero_settings);
+        return $this->pterodactyl;
     }
 
     public static function boot()
@@ -102,7 +103,7 @@ class Server extends Model
         });
 
         static::deleting(function (Server $server) {
-            $response = $server->pterodactyl->application->delete("/application/servers/{$server->pterodactyl_id}");
+            $response = $server->getPterodactylClient()->application->post("application/servers/{$server->pterodactyl_id}/delete");
             if ($response->failed() && !is_null($server->pterodactyl_id)) {
                 //only return error when it's not a 404 error
                 if ($response['errors'][0]['status'] != '404') {
@@ -179,6 +180,11 @@ class Server extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function node(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Pterodactyl\Node::class, 'node_id');
+    }
+
     public function getEffectiveBillingPriorityAttribute()
     {
         return $this->billing_priority ?? $this->product->default_billing_priority;
@@ -194,3 +200,5 @@ class Server extends Model
             ->orderBy('created_at', 'asc');
     }
 }
+
+
