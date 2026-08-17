@@ -56,7 +56,6 @@ Cambios relacionados con:
 
 * Generación automática del ID local mediante Nanoid.
 * Estados del servidor:
-
   * `provisioning`
   * `active`
   * `failed`
@@ -93,6 +92,32 @@ Migration relacionada con:
 * Permitir almacenar el Node asociado al servidor.
 * Preparar la base de datos para poder trabajar con la relación servidor → Node.
 
+### 8. `themes/phoenix/views/servers/index.blade.php`
+
+Cambio relacionado con la visualización de servidores en Phoenix:
+
+* Se eliminó la comprobación de `$server->location` del `@if` principal.
+* Los servidores ya no dejan de mostrarse cuando `location` es `NULL`.
+* Antes se utilizaba:
+  `@if ($server->location && $server->node && $server->nest && $server->egg)`
+* Ahora se utiliza:
+  `@if ($server->node && $server->nest && $server->egg)`
+
+Además, el valor de `location` se establece como valor fijo `PbtHosting` para la visualización de los servidores.
+
+### 9. `themes/default/views/servers/index.blade.php`
+
+Cambio relacionado con la visualización de servidores en el tema Default:
+
+* Se elimina la dependencia de `$server->location` para determinar si un servidor debe mostrarse.
+* El valor de `location` se establece como valor fijo `PbtHosting`.
+* Esto evita que un servidor desaparezca de `/servers` cuando Pterodactyl (Fork) no devuelve correctamente la ubicación.
+* La ubicación mostrada al usuario será siempre `PbtHosting`.
+
+## Solución de ubicación
+
+La ubicación mostrada en `/servers` es un valor fijo: "PbtHosting"
+
 ## Estructura
 
 ```text
@@ -113,6 +138,16 @@ app/
 database/
 └── migrations/
     └── 2026_08_17_084917_add_node_id_to_servers_table.php
+
+themes/
+├── phoenix/
+│   └── views/
+│       └── servers/
+│           └── index.blade.php
+└── default/
+    └── views/
+        └── servers/
+            └── index.blade.php
 ```
 
 ## Pendiente
