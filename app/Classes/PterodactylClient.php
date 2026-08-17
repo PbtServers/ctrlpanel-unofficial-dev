@@ -405,7 +405,7 @@ class PterodactylClient
     public function getServerAttributes(int $pterodactylId, bool $deleteOn404 = false)
     {
         try {
-            $response = $this->application->get("application/servers/{$pterodactylId}?include=egg,node,nest,location");
+            $response = $this->application->get("application/servers/{$pterodactylId}?include=egg,node,nest");
         } catch (Exception $e) {
             throw self::getException($e->getMessage());
         }
