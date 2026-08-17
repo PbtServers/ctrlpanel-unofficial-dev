@@ -6,20 +6,20 @@
 
 ## Resumen
 
-Estos son los archivos que hemos preparado/modificado para trasladar los cambios del entorno local al repositorio de GitHub.
+Estos son los archivos que hemos modificado durante los cambios realizados en el entorno local.
 
 ### 1. `app/Http/Controllers/ServerController.php`
 
 Cambios relacionados con:
 
-* Corrección del error 500 al consultar información de Pterodactyl.
+* Corrección del error 500 al consultar información de Pterodactyl (Fork).
 * Manejo de servidores que todavía no tienen `pterodactyl_id`.
 * Creación de servidores mediante `ServerCreationService`.
 * Protección contra múltiples solicitudes de creación simultáneas.
 * Validación de producto, créditos, recursos y allocations.
 * Manejo de errores durante la creación.
 * Eliminación de servidores.
-* Manejo de errores de Pterodactyl.
+* Manejo de errores de Pterodactyl (Fork).
 * Mejoras en la obtención de información de los servidores.
 
 ### 2. `app/Services/ServerCreationService.php`
@@ -30,7 +30,7 @@ Cambios relacionados con:
 * Generación/asignación del ID local.
 * Reserva de créditos antes del aprovisionamiento.
 * Obtención de Node y allocation disponibles.
-* Creación del servidor en Pterodactyl.
+* Creación del servidor en Pterodactyl (Fork).
 * Guardado de `pterodactyl_id` e `identifier`.
 * Estados de provisioning.
 * Manejo de creación correcta.
@@ -43,12 +43,12 @@ Cambios relacionados con:
 
 Cambios relacionados con:
 
-* Comunicación con la API de Pterodactyl.
+* Comunicación con la API de Pterodactyl (Fork).
 * Creación de servidores.
 * Obtención de allocations.
 * Obtención de información de servidores.
 * Comprobación de recursos de Nodes.
-* Manejo de respuestas y errores de Pterodactyl.
+* Manejo de respuestas y errores de Pterodactyl (Fork).
 
 ### 4. `app/Models/Server.php`
 
@@ -61,11 +61,11 @@ Cambios relacionados con:
   * `active`
   * `failed`
   * `pending_reconciliation`
-* Gestión de eliminación del servidor en Pterodactyl.
+* Gestión de eliminación del servidor en Pterodactyl (Fork).
 * Gestión del `pterodactyl_id`.
 * Relaciones del servidor.
 
-> Importante: este modelo **no contiene `node_id`** y no debemos añadirlo sin comprobar primero cómo funciona el modelo de Nodes del proyecto.
+> **Importante:** este modelo no contiene `node_id` y no debemos añadirlo sin comprobar primero cómo funciona el modelo de Nodes del proyecto.
 
 ### 5. `app/Jobs/PostServerCreationJob.php`
 
@@ -73,19 +73,27 @@ Responsable de:
 
 * Procesar las tareas posteriores a una creación correcta.
 * Mantener el proceso de creación idempotente.
-* Completar la configuración del servidor después de crearlo en Pterodactyl.
+* Completar la configuración del servidor después de crearlo en Pterodactyl (Fork).
 
 ### 6. `app/Jobs/ReconcileServerCreationJob.php`
 
 Responsable de:
 
 * Comprobar servidores cuya creación quedó en un estado incierto.
-* Determinar si Pterodactyl creó realmente el servidor.
+* Determinar si Pterodactyl (Fork) creó realmente el servidor.
 * Recuperar `pterodactyl_id` e `identifier` cuando sea posible.
 * Evitar servidores locales inconsistentes.
 * Gestionar correctamente créditos y estados pendientes.
 
-## Estructura final
+### 7. `database/migrations/2026_08_17_084917_add_node_id_to_servers_table.php`
+
+Migration relacionada con:
+
+* Añadir la columna `node_id` a la tabla `servers`.
+* Permitir almacenar el Node asociado al servidor.
+* Preparar la base de datos para poder trabajar con la relación servidor → Node.
+
+## Estructura
 
 ```text
 app/
@@ -101,25 +109,24 @@ app/
 │   └── Server.php
 └── Services/
     └── ServerCreationService.php
+
+database/
+└── migrations/
+    └── 2026_08_17_084917_add_node_id_to_servers_table.php
 ```
 
-## Total
+## Pendiente
 
-**6 archivos preparados para trasladar al repositorio de GitHub.**
-
-Repositorio destino:
-
-`PbtServers/ctrlpanel-unofficial-dev`
-
-### Pendiente
-
-Antes de subir migrations o modificaciones adicionales, comprobar:
+Antes de realizar modificaciones adicionales, comprobar:
 
 * Si se modificó la estructura de la tabla `servers`.
 * Si es necesario añadir/modificar `status`.
 * Si existe alguna migration relacionada con los nuevos estados.
 * Cómo se obtiene el Node en la versión actual del proyecto.
-* Compatibilidad con Jexactyl/Pterodactyl V4.0.6.
+* Compatibilidad con **Jexpanel/Jexactyl**.
+* Compatibilidad con **Pterodactyl (Fork)**.
+* Revisar por qué los servidores no aparecen actualmente en `/servers`.
+* Comprobar la relación entre los servidores almacenados en CtrlPanel y los servidores existentes en Pterodactyl (Fork).
 
 # CtrlPanel.gg
 
