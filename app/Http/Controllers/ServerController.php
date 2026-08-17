@@ -245,17 +245,17 @@ class ServerController extends Controller
 
     private function getServersWithInfo(): \Illuminate\Database\Eloquent\Collection
     {
-    $user = Auth::user();
+        $user = Auth::user();
 
-    if (!$user) {
-        return new \Illuminate\Database\Eloquent\Collection();
-    }
+        if (!$user) {
+            return new \Illuminate\Database\Eloquent\Collection();
+        }
 
-    $servers = $user->servers;
-        
+        $servers = $user->servers;
+
         foreach ($servers as $server) {
-            // El servidor puede existir localmente antes de estar
-            // provisionado correctamente en Pterodactyl.
+            // A server can exist locally before it has been successfully
+            // provisioned on Pterodactyl. Never call the API with NULL.
             if (!$server->pterodactyl_id) {
                 continue;
             }
@@ -339,19 +339,12 @@ class ServerController extends Controller
     public function destroy(Server $server): RedirectResponse
     {
         Log::error("DESTROY CONTROLLER ENTERED", ["server" => $server->id]);
-
         if ($server->user_id !== Auth::id()) {
             return back()->with('error', __('This is not your Server!'));
         }
 
         try {
-            if (!$server->pterodactyl_id) {
-                throw new Exception("Server has no Pterodactyl ID");
-            }
-
-            $serverInfo = $this->pterodactyl->getServerAttributes(
-                (int) $server->pterodactyl_id
-            );
+            $serverInfo = $this->pterodactyl->getServerAttributes($server->pterodactyl_id);
 
             if (!$serverInfo) {
                 throw new Exception("Server not found on Pterodactyl panel");
