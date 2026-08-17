@@ -74,7 +74,7 @@
                                         {{ __('Location') }}:
                                     </div>
                                     <div class="col-7 d-flex justify-content-between align-items-center">
-                                        <span class="">{{ $server->location }}</span>
+                                        <span class="">PbtHosting</span>
                                         <i data-toggle="popover" data-trigger="hover"
                                             data-content="{{ __('Node') }}: {{ $server->node }}"
                                             class="fas fa-info-circle"></i>
@@ -194,8 +194,8 @@
                                 <i class="mx-2 fas fa-tools"></i>
                             </a>
                             <a href="{{ route('servers.show', ['server' => $server->id])}}"
-                            	class="mr-3 text-center btn btn-info"
-                            	data-toggle="tooltip" data-placement="bottom" title="{{ __('Server Settings') }}">
+                                class="mr-3 text-center btn btn-info"
+                                data-toggle="tooltip" data-placement="bottom" title="{{ __('Server Settings') }}">
                                 <i class="mx-2 fas fa-cog"></i>
                             </a>
                             <button onclick="handleServerCancel('{{ $server->id }}');" target="__blank"
@@ -204,11 +204,16 @@
                                 data-toggle="tooltip" data-placement="bottom" title="{{ __('Cancel Server') }}">
                                 <i class="mx-2 fas fa-ban"></i>
                             </button>
-                            <button onclick="handleServerDelete('{{ $server->id }}');" target="__blank"
-                                class="float-right mr-2 text-center btn btn-danger"
-                                data-toggle="tooltip" data-placement="bottom" title="{{ __('Delete Server') }}">
-                                <i class="mx-2 fas fa-trash"></i>
-                            </button>
+                            <form method="POST" action="{{ route('servers.destroy', ['server' => $server->id]) }}" class="d-inline"
+                                onsubmit="return confirm('{{ __('Delete Server?') }}');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="float-right mr-2 text-center btn btn-danger"
+                                    data-toggle="tooltip" data-placement="bottom" title="{{ __('Delete Server') }}">
+                                    <i class="mx-2 fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                  @endif
